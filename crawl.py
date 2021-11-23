@@ -4,9 +4,8 @@ import requests
 import smtplib
 import ssl
 
+
 # send email function
-
-
 def send_email(recipient, subject, body):
     # google how to create app password for gmail
     user = "your.email@gmail.com"
