@@ -1,35 +1,41 @@
-# TODO find out how to run this in google cloud as a serverless cloud function
+# TODO find out how to run this in gcloud
 
 import requests
 import smtplib
 import ssl
 
-
 # send email function
-def send_email(msg, to):
-    port = 587  # For starttls
-    smtp_server = "smtp.gmail.com"
-    sender_email = "your.bot.email@gmail.com"
-    receiver_email = to
-    # hide this for security reasons when uploading to github
-    # just google how to send mail from gmail with python to get this
-    password = "your_google_app_password"
-    context = ssl.create_default_context()
-    with smtplib.SMTP(smtp_server, port) as server:
-        server.ehlo()  # Can be omitted
-        server.starttls(context=context)
-        server.ehlo()  # Can be omitted
-        server.login(sender_email, password)
-        server.sendmail(sender_email, receiver_email, msg)
 
 
-# main crawl function that has print debugging statements cos I'm fast and lazy
+def send_email(recipient, subject, body):
+    # google how to create app password for gmail
+    user = "your.email@gmail.com"
+    pwd = "yourAppPwd"
+    # u can chain recipients together if u pass them as a list
+    TO = recipient if isinstance(recipient, list) else [recipient]
+    # generating the email message looks really awkward with the smtplib
+    message = """From: %s\nTo: %s\nSubject: %s\n\n%s
+    """ % (user, ", ".join(TO), subject, body)
+
+    try:
+        server = smtplib.SMTP("smtp.gmail.com", 587)
+        server.ehlo()
+        server.starttls()
+        server.login(user, pwd)
+        server.sendmail(user, TO, message)
+        server.close()
+        print('successfully sent the mail')
+    except:
+        print("failed to send mail")
+
+
+# main crawl function with print statements as a script debugging tool (fast and lazy)
 def main():
     with open("log.txt", "r+") as f:
         text = int(f.read())
         print("current value in file: " + str(text))
-        response = requests.get(
-            "https://www.att.hel.fi/fi/omistusasunnot/asunto-oy-helsingin-siili")
+        site_address = "https://www.att.hel.fi/fi/omistusasunnot/asunto-oy-helsingin-priki-johanna"
+        response = requests.get(site_address)
         print("response status code: " + str((response.status_code)))
         content = response.text
         match = "Vapaa"
@@ -38,10 +44,8 @@ def main():
         if match_count != text:
             if(match_count > text):
                 print("count has changed to bigger")
-                msg = "www.att.hel.fi/fi/omistusasunnot/asunto-oy-helsingin-siili"
-                email = "your@email.com"
-                send_email.send_email(msg, email)
-                print("emails send")
+                title = "Bot Triggered"
+                send_email("your@email.com", title, site_address)
             else:
                 print("count has changed to smaller")
             file = open("log.txt", "w")
