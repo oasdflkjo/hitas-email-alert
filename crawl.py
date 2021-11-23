@@ -4,9 +4,8 @@ import requests
 import smtplib
 import ssl
 
+
 # send email function
-
-
 def send_email(msg, to):
     port = 587  # For starttls
     smtp_server = "smtp.gmail.com"
