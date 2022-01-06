@@ -7,7 +7,7 @@ This is a simple python script for web scraping and sending alert messages from 
 
 ---
 
-It compares the count of words "Vapaa" in received HTTP response. If the count has changed to a bigger value event is triggered that sends a link to the site as an email.
+It compares the count of words "Vapaa" in received HTTP response. If the count has changed to a bigger value then an event is triggered that sends a link to the site as an email.
 
 I chose to run this with crontab job and store the count variable in log.txt.
 
